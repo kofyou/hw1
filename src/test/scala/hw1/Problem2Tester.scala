@@ -10,8 +10,17 @@ class Problem2Tester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "Problem2"
   it should "correctly pass tests on all 8 inputs" in {
     test(new Problem2) { dut =>
-      // FILL IN HERE
-      ???
+      val values = Seq(true, false)
+      for (a <- values) {
+        for (b <- values) {
+          for (c <- values) {
+            dut.io.a.poke(a.B)
+            dut.io.b.poke(b.B)
+            dut.io.c.poke(c.B)
+            dut.io.out.expect((a & (b ^ c)).B)
+          }
+        }
+      }
     }
   }
 }

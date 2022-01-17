@@ -15,7 +15,15 @@ import chisel3.util._
   * io.out1: 6-bit UInt Output
   */
 class CombLogic extends Module {
-    val io = ???
+    val io = IO(new Bundle {
+      val b = Input(Bool())
+      val x = Input(UInt(6.W))
+      val y = Input(UInt(6.W))
+      val out0 = Output(Bool())
+      val out1 = Output(UInt(6.W))
+    })
+    io.out0 := io.b ^  (io.x & io.y)(5)
+    io.out1 := Cat(io.x(5,3), io.y(2,0))
 }
 
 class Problem2 extends Module {
@@ -41,7 +49,16 @@ class PolyEval(c0: Int, c1: Int, c2: Int) extends Module {
     require (c0 >= 0 && c0 < 32)
     require (c1 >= 0 && c1 < 32)
     require (c2 >= 0 && c2 < 32)
-    val io = ???
+    val io = IO(new Bundle {
+      val en = Input(Bool())
+      val x = Input(UInt(5.W))
+      val out = Output(UInt())
+    })
+
+    io.out := 0.U
+    when (io.en) {
+      io.out := c0.U +& c1.U * io.x +& c2.U * io.x * io.x
+    }
 }
 
 
@@ -65,5 +82,17 @@ class ComplexALU(onlyAdder: Boolean) extends Module {
       val realOut = Output(SInt())
       val imagOut = Output(SInt())
   })
-  ???
+  if (onlyAdder == true) {
+    when (io.doAdd) {
+      io.realOut := io.real0 +& io.real1
+      io.imagOut := io.imag0 +& io.imag1
+    } .otherwise {
+      // what does expanding substraction mean?
+      io.realOut := io.real0 -& io.real1
+      io.imagOut := io.imag0 -& io.imag1
+    }
+  } else {
+    io.realOut := io.real0 +& io.real1
+    io.imagOut := io.imag0 +& io.imag1
+  }
 }
